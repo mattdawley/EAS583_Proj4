@@ -10,6 +10,7 @@ import csv
 eventfile = 'deposit_logs.csv'
 
 def scanBlocks(chain,start_block,end_block,contract_address):
+    print("running ScanBlocks with", chain, start_block, end_block, contract_address)
     """
     chain - string (Either 'bsc' or 'avax')
     start_block - integer first block to scan
@@ -31,6 +32,8 @@ def scanBlocks(chain,start_block,end_block,contract_address):
         w3.middleware_onion.inject(geth_poa_middleware, layer=0)
     else:
         w3 = Web3(Web3.HTTPProvider(api_url))
+
+
 
     DEPOSIT_ABI = json.loads('[ { "anonymous": false, "inputs": [ { "indexed": true, "internalType": "address", "name": "token", "type": "address" }, { "indexed": true, "internalType": "address", "name": "recipient", "type": "address" }, { "indexed": false, "internalType": "uint256", "name": "amount", "type": "uint256" } ], "name": "Deposit", "type": "event" }]')
     contract = w3.eth.contract(address=contract_address, abi=DEPOSIT_ABI)
@@ -54,7 +57,7 @@ def scanBlocks(chain,start_block,end_block,contract_address):
 
     with open(eventfile,'w') as f:
         writer = csv.writer(f)
-        header = 'chain, token, recipient, amount, transactionHash, address'
+        header = ['chain', 'token', 'recipient', 'amount', 'transactionHash', 'address']
         writer.writerow(header)
 
     if end_block - start_block < 30:
@@ -70,7 +73,7 @@ def scanBlocks(chain,start_block,end_block,contract_address):
                     'transactionHash': evt.transactionHash.hex(),
                     'address': evt.address,
                     }
-            row = str(api_url) + ', ' + str(data['from']) + ', ' + str(data['to']) + ', ' + str(data['value']) + ', ' + str(data['transactionHash']) + ', ' + str(data['address'])
+            row = [str(api_url), str(data['from']), str(data['to']), str(data['value']), str(data['transactionHash']), str(data['address'])]
             writer.writerow(row)
     else:
         for block_num in range(start_block,end_block+1):
@@ -80,12 +83,12 @@ def scanBlocks(chain,start_block,end_block,contract_address):
             #// YOUR CODE HERE
             for evt in events:
                 data = {'to': evt.args['receiver'],
-                    'from': evt.args['sender'],
-                    'value': evt.args['value'],
-                    'transactionHash': evt.transactionHash.hex(),
-                    'address': evt.address,
-                    }
-                row = str(api_url) + ', ' + str(data['from']) + ', ' + str(data['to']) + ', ' + str(data['value']) + ', ' + str(data['transactionHash']) + ', ' + str(data['address'])
+                        'from': evt.args['sender'],
+                        'value': evt.args['value'],
+                        'transactionHash': evt.transactionHash.hex(),
+                        'address': evt.address,
+                        }
+                row = [str(api_url), str(data['from']), str(data['to']), str(data['value']), str(data['transactionHash']), str(data['address'])]
                 writer.writerow(row)
 
     writer.close()
