@@ -61,7 +61,7 @@ def scanBlocks(chain,start_block,end_block,contract_address):
         with open(eventfile,'a') as f:
             writer = csv.writer(f)
     else:
-        with open(eventfile,'a') as f:
+        with open(eventfile,'w') as f:
             writer = csv.writer(f)
             header = ['chain', 'token', 'recipient', 'amount', 'transactionHash', 'address']
             writer.writerow(header)
