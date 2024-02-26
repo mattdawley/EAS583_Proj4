@@ -1,3 +1,5 @@
+import os
+
 from web3 import Web3
 from web3.contract import Contract
 from web3.providers.rpc import HTTPProvider
@@ -55,10 +57,14 @@ def scanBlocks(chain,start_block,end_block,contract_address):
     else:
         print( f"Scanning blocks {start_block} - {end_block} on {chain}" )
 
-    with open(eventfile,'a') as f:
-        writer = csv.writer(f)
-        header = ['chain', 'token', 'recipient', 'amount', 'transactionHash', 'address']
-        writer.writerow(header)
+    if os.path.exists(eventfile):
+        with open(eventfile,'a') as f:
+            writer = csv.writer(f)
+    else:
+        with open(eventfile,'a') as f:
+            writer = csv.writer(f)
+            header = ['chain', 'token', 'recipient', 'amount', 'transactionHash', 'address']
+            writer.writerow(header)
 
     if end_block - start_block < 30:
         event_filter = contract.events.Deposit.create_filter(fromBlock=start_block,toBlock=end_block,argument_filters=arg_filter)
