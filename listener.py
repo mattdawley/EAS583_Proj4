@@ -55,7 +55,7 @@ def scanBlocks(chain,start_block,end_block,contract_address):
     else:
         print( f"Scanning blocks {start_block} - {end_block} on {chain}" )
 
-    with open(eventfile,'w') as f:
+    with open(eventfile,'a') as f:
         writer = csv.writer(f)
         header = ['chain', 'token', 'recipient', 'amount', 'transactionHash', 'address']
         writer.writerow(header)
