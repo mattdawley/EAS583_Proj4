@@ -57,14 +57,10 @@ def scanBlocks(chain,start_block,end_block,contract_address):
     else:
         print( f"Scanning blocks {start_block} - {end_block} on {chain}" )
 
-    if os.path.exists(eventfile):
-        with open(eventfile,'a') as f:
-            writer = csv.writer(f)
-    else:
-        with open(eventfile,'w') as f:
-            writer = csv.writer(f)
-            header = ['chain', 'token', 'recipient', 'amount', 'transactionHash', 'address']
-            writer.writerow(header)
+    with open(eventfile,'w') as f:
+        writer = csv.writer(f)
+        header = ['chain', 'token', 'recipient', 'amount', 'transactionHash', 'address']
+        writer.writerow(header)
 
     if end_block - start_block < 30:
         event_filter = contract.events.Deposit.create_filter(fromBlock=start_block,toBlock=end_block,argument_filters=arg_filter)
@@ -80,12 +76,14 @@ def scanBlocks(chain,start_block,end_block,contract_address):
                     'transactionHash': evt.transactionHash.hex(),
                     'address': evt.address,
                     }
-            writer.writerow(data.values())
+            with open(eventfile, 'a', newline='') as f:
+                writer = csv.writer(f)
+                writer.writerow(data.values())
     else:
         for block_num in range(start_block,end_block+1):
             event_filter = contract.events.Deposit.create_filter(fromBlock=block_num,toBlock=block_num,argument_filters=arg_filter)
             events = event_filter.get_all_entries()
-            print( f"Got {len(events)} entries for block {block_num}" )
+            #print( f"Got {len(events)} entries for block {block_num}" )
             #// YOUR CODE HERE
             for evt in events:
                 data = {'chain': chain,
@@ -95,7 +93,8 @@ def scanBlocks(chain,start_block,end_block,contract_address):
                         'transactionHash': evt.transactionHash.hex(),
                         'address': evt.address,
                         }
-                writer.writerow(data.values())
-
+                with open(eventfile, 'a', newline='') as f:
+                    writer = csv.writer(f)
+                    writer.writerow(data.values())
 
 
