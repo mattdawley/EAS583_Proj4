@@ -91,5 +91,5 @@ def scanBlocks(chain,start_block,end_block,contract_address):
                         }
                 writer.writerow(data.values())
 
-    writer.close()
+
 
